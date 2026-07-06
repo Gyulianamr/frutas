@@ -8,23 +8,35 @@ st.set_page_config(page_title="Clasificador de Frutas", page_icon="🍎")
 
 @st.cache_resource
 def cargar_modelo():
-    modelo = tf.keras.models.load_model("modelo_frutas.keras")
-    with open("clases.json") as f:
+    modelo = tf.keras.models.load_model("models/modelo_frutas.h5")
+    with open("models/clases.json") as f:
         clases = json.load(f)
     return modelo, clases
 
 modelo, clases = cargar_modelo()
 
 st.title("🍓 Clasificador de Frutas con IA")
-st.write("Sube una imagen de una fruta y el modelo predecirá su categoría.")
+st.caption("Proyecto por: Genesis Yuliana Medina Ramos")
+st.write("Sube una imagen o toma una foto de una fruta y el modelo predecirá su categoría.")
 
-archivo = st.file_uploader("Selecciona una imagen", type=["jpg", "jpeg", "png"])
+tab1, tab2 = st.tabs(["📁 Subir imagen", "📷 Tomar foto"])
 
-if archivo is not None:
-    img = Image.open(archivo).convert("RGB")
-    st.image(img, caption="Imagen cargada", use_column_width=True)
+imagen_entrada = None
 
-    img_resized = img.resize((100, 100))
+with tab1:
+    archivo = st.file_uploader("Selecciona una imagen", type=["jpg", "jpeg", "png"])
+    if archivo is not None:
+        imagen_entrada = Image.open(archivo).convert("RGB")
+
+with tab2:
+    foto = st.camera_input("Toma una foto de la fruta")
+    if foto is not None:
+        imagen_entrada = Image.open(foto).convert("RGB")
+
+if imagen_entrada is not None:
+    st.image(imagen_entrada, caption="Imagen a clasificar", use_column_width=True)
+
+    img_resized = imagen_entrada.resize((100, 100))
     arr = np.array(img_resized) / 255.0
     arr = np.expand_dims(arr, axis=0)
 
@@ -34,3 +46,6 @@ if archivo is not None:
 
     st.success(f"Predicción: **{clases[idx]}**")
     st.write(f"Confianza: {confianza:.2%}")
+
+st.markdown("---")
+st.caption("Clasificador de frutas desarrollado con TensorFlow y Streamlit — Genesis Yuliana Medina Ramos")
