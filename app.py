@@ -8,7 +8,7 @@ st.set_page_config(page_title="Clasificador de Frutas", page_icon="🍎")
 
 @st.cache_resource
 def cargar_modelo():
-    modelo = tf.keras.models.load_model("modelo_frutas.h5")
+    modelo = tf.keras.models.load_model("modelo_frutas.keras")
     with open("clases.json") as f:
         clases = json.load(f)
     return modelo, clases
@@ -22,7 +22,7 @@ archivo = st.file_uploader("Selecciona una imagen", type=["jpg", "jpeg", "png"])
 
 if archivo is not None:
     img = Image.open(archivo).convert("RGB")
-    st.image(img, caption="Imagen cargada", use_container_width=True)
+    st.image(img, caption="Imagen cargada", use_column_width=True)
 
     img_resized = img.resize((100, 100))
     arr = np.array(img_resized) / 255.0
